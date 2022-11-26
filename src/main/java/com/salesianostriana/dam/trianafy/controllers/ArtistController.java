@@ -1,7 +1,9 @@
 package com.salesianostriana.dam.trianafy.controllers;
 
 import com.salesianostriana.dam.trianafy.model.Artist;
+import com.salesianostriana.dam.trianafy.model.Song;
 import com.salesianostriana.dam.trianafy.service.ArtistService;
+import com.salesianostriana.dam.trianafy.service.SongService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +19,7 @@ import java.util.Optional;
 public class ArtistController {
 
     private final ArtistService artistService;
+    private final SongService songService;
 
     @PostMapping("/") //400
     public ResponseEntity<Artist> createArtist(@RequestBody Artist artist){
@@ -34,7 +37,6 @@ public class ArtistController {
         }
     }
 
-
     @GetMapping("/{id}") //404
     public ResponseEntity<Artist> getArtistById(@PathVariable Long id){
         List<Artist> lista = getAllArtist().getBody();
@@ -48,9 +50,7 @@ public class ArtistController {
         catch (NullPointerException e){
             return ResponseEntity.notFound().build();
         }
-
         return ResponseEntity.notFound().build();
-
     }
 
     @PutMapping("/{id}") //404
@@ -71,9 +71,26 @@ public class ArtistController {
     //No va porq el artista esta asociado a las canciones.
     @DeleteMapping("/{id}") //404
     public ResponseEntity<?> deleteArtist(@PathVariable Long id){
-        if(!artistService.findById(id).isEmpty()){
-            artistService.deleteById(id);
-            return ResponseEntity.noContent().build();
+
+        if(artistService.findById(id).isPresent()){
+            List<Song> listaCanciones = songService.findAll();
+
+           if(!listaCanciones.isEmpty()){
+               for(Song song: listaCanciones){
+                   if(song.getArtist() != null){
+                       if(song.getArtist().getId() == id) {
+                           song.setArtist(null);
+                           songService.add(song);
+                       }
+                   }
+               }
+               artistService.deleteById(id);
+               return ResponseEntity.noContent().build();
+           }
+           else{
+               artistService.deleteById(id);
+               return ResponseEntity.noContent().build();
+           }
         }
 
         return ResponseEntity.notFound().build();
