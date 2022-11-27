@@ -3,8 +3,10 @@ package com.salesianostriana.dam.trianafy.controllers;
 import com.salesianostriana.dam.trianafy.dto.CreateSongDTO;
 import com.salesianostriana.dam.trianafy.dto.SongDTOConverter;
 import com.salesianostriana.dam.trianafy.model.Artist;
+import com.salesianostriana.dam.trianafy.model.Playlist;
 import com.salesianostriana.dam.trianafy.model.Song;
 import com.salesianostriana.dam.trianafy.service.ArtistService;
+import com.salesianostriana.dam.trianafy.service.PlaylistService;
 import com.salesianostriana.dam.trianafy.service.SongService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,13 +25,14 @@ public class SongController {
     private final SongService songService;
     private final SongDTOConverter songDTOConverter;
     private final ArtistService artistService;
+    private final PlaylistService playlistService;
 
     @GetMapping("/")
     public ResponseEntity<List<Song>> getAllSongs(){
         List<Song> songList = songService.findAll();
 
         if(songList.isEmpty())
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.notFound().header("404","Not Found").build();
         else{
             return ResponseEntity.ok().body(songList);
         }
@@ -90,16 +94,30 @@ public class SongController {
         return ResponseEntity.notFound().build();
     }
 
-    //No se borran canciones asociadas a playlist -> integridad referencial.
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteSong(@PathVariable Long id){
 
         if(songService.findById(id).isPresent()){
-            songService.deleteById(id);
-            return ResponseEntity.noContent().build();
-        }
 
+            List<Playlist> playlists = playlistService.findAll();
+
+            if(playlists.isEmpty()){
+                songService.deleteById(id);
+                return ResponseEntity.noContent().build();
+            }
+            else{
+                for(Playlist playlist: playlists){
+                    playlist.setSongs(playlist.getSongs()
+                            .stream()
+                            .filter(song -> song.getId() != id)
+                            .collect(Collectors.toList()));
+                }
+                songService.deleteById(id);
+                return ResponseEntity.noContent().build();
+            }
+
+        }
         return ResponseEntity.notFound().build();
     }
 
