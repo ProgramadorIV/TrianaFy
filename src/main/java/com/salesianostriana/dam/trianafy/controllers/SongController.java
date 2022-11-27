@@ -1,6 +1,7 @@
 package com.salesianostriana.dam.trianafy.controllers;
 
 import com.salesianostriana.dam.trianafy.dto.CreateSongDTO;
+import com.salesianostriana.dam.trianafy.dto.GetSongDTO;
 import com.salesianostriana.dam.trianafy.dto.SongDTOConverter;
 import com.salesianostriana.dam.trianafy.model.Artist;
 import com.salesianostriana.dam.trianafy.model.Playlist;
@@ -28,13 +29,17 @@ public class SongController {
     private final PlaylistService playlistService;
 
     @GetMapping("/")
-    public ResponseEntity<List<Song>> getAllSongs(){
+    public ResponseEntity<List<GetSongDTO>> getAllSongs(){
         List<Song> songList = songService.findAll();
 
         if(songList.isEmpty())
-            return ResponseEntity.notFound().header("404","Not Found").build();
+            return ResponseEntity.notFound().header("404","There are no available songs.").build();
         else{
-            return ResponseEntity.ok().body(songList);
+            return ResponseEntity.ok().body(songList
+                    .stream()
+                    .map(songDTOConverter::SongToGetSongDTO)
+                    .collect(Collectors.toList())
+            );
         }
     }
 
@@ -42,20 +47,18 @@ public class SongController {
     public ResponseEntity<Song> getSongById(@PathVariable Long id){
         List<Song> songList = songService.findAll();
 
-        try{
-            for(Song song: songList){
-                if(song.getId() == id)
-                    return ResponseEntity.of(songService.findById(id));
-            }
+        if(songList.isEmpty()){
+            return ResponseEntity.notFound().header("404", "There are no available songs.").build();
         }
-        catch (NullPointerException exception){
-            return ResponseEntity.notFound().build();
+        for(Song song: songList){
+            if(song.getId() == id)
+                return ResponseEntity.of(songService.findById(id));
         }
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.notFound().header("404", "This song does not exist.").build();
     }
 
-    @PostMapping("/") //400
-    public ResponseEntity<Song> createSong(@RequestBody CreateSongDTO createSongDTO){
+    @PostMapping("/")
+    public ResponseEntity<GetSongDTO> createSong(@RequestBody CreateSongDTO createSongDTO){
 
         Song newSong = songDTOConverter.createSongDTOToSong(createSongDTO);
         Artist artist = artistService
@@ -65,11 +68,11 @@ public class SongController {
 
         newSong.setArtist(artist);
         songService.add(newSong);
-        return ResponseEntity.status(HttpStatus.CREATED).body(newSong);
+        return ResponseEntity.status(HttpStatus.CREATED).body(songDTOConverter.SongToGetSongDTO(newSong));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Song> updateSong(@PathVariable Long id, @RequestBody CreateSongDTO createSongDTO){
+    @PutMapping("/{id}") //getDTO
+    public ResponseEntity<GetSongDTO> updateSong(@PathVariable Long id, @RequestBody CreateSongDTO createSongDTO){
 
         Optional<Song> song = songService.findById(id);
 
@@ -81,17 +84,20 @@ public class SongController {
                     artistService.findById(createSongDTO.getArtistId()).get() : null;
 
             newSong.setArtist(artist);
-            return ResponseEntity.of(
-                    song.map(s -> {
+
+            songService.add(
+                    song.map(s ->{
                         s.setTitle(newSong.getTitle());
                         s.setAlbum(newSong.getAlbum());
                         s.setYear(newSong.getYear());
                         s.setArtist(newSong.getArtist());
-                        return Optional.of(songService.add(s));
-                    }).orElse(Optional.empty())
+                        return s;
+                    }).get()
             );
+
+            return ResponseEntity.of(Optional.of(songDTOConverter.SongToGetSongDTO(song.get())));
         }
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.notFound().header("404", "This song does not exist.").build();
     }
 
 
@@ -104,7 +110,7 @@ public class SongController {
 
             if(playlists.isEmpty()){
                 songService.deleteById(id);
-                return ResponseEntity.noContent().build();
+                return ResponseEntity.noContent().header("204", "The song has been removed successfully.").build();
             }
             else{
                 for(Playlist playlist: playlists){
@@ -114,11 +120,11 @@ public class SongController {
                             .collect(Collectors.toList()));
                 }
                 songService.deleteById(id);
-                return ResponseEntity.noContent().build();
+                return ResponseEntity.noContent().header("204", "The song has been removed successfully.").build();
             }
 
         }
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.notFound().header("404", "This song does not exist.").build();
     }
 
 

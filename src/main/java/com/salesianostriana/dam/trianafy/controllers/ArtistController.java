@@ -21,39 +21,38 @@ public class ArtistController {
     private final ArtistService artistService;
     private final SongService songService;
 
-    @PostMapping("/") //400
+    @PostMapping("/")
     public ResponseEntity<Artist> createArtist(@RequestBody Artist artist){
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(artistService.add(artist));
     }
 
-    @GetMapping("/") //404
+    @GetMapping("/")
     public ResponseEntity<List<Artist>> getAllArtist(){
         if(artistService.findAll().isEmpty())
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.notFound().header("404", "There are no available artists.").build();
         else{
             return ResponseEntity.ok().body(artistService.findAll());
         }
     }
 
-    @GetMapping("/{id}") //404
+    @GetMapping("/{id}")
     public ResponseEntity<Artist> getArtistById(@PathVariable Long id){
-        List<Artist> lista = getAllArtist().getBody();
+        List<Artist> list = getAllArtist().getBody();
 
-        try {
-            for (Artist artist: lista) {
-                if(artist.getId() == id)
-                    return ResponseEntity.of(artistService.findById(id));
-            }
+        if(list==null)
+            return ResponseEntity.notFound().header("404", "There are no available artist.").build();
+
+        for (Artist artist: list) {
+            if(artist.getId() == id)
+                return ResponseEntity.of(artistService.findById(id));
         }
-        catch (NullPointerException e){
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.notFound().build();
+
+        return ResponseEntity.notFound().header("404", "This song does not exist.").build();
     }
 
-    @PutMapping("/{id}") //404
+    @PutMapping("/{id}")
     public ResponseEntity<Artist> updateArtist(@PathVariable Long id, @RequestBody Artist artist){
         if(artistService.findById(id).isPresent())
             return ResponseEntity.of(
@@ -64,19 +63,19 @@ public class ArtistController {
                             }).orElse(Optional.empty())
             );
 
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.notFound().header("404", "This song does not exist.").build();
 
     }
 
-    //No va porq el artista esta asociado a las canciones.
-    @DeleteMapping("/{id}") //404
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteArtist(@PathVariable Long id){
 
         if(artistService.findById(id).isPresent()){
-            List<Song> listaCanciones = songService.findAll();
 
-           if(!listaCanciones.isEmpty()){
-               for(Song song: listaCanciones){
+            List<Song> songList = songService.findAll();
+
+           if(!songList.isEmpty()){
+               for(Song song: songList){
                    if(song.getArtist() != null){
                        if(song.getArtist().getId() == id) {
                            song.setArtist(null);
@@ -84,15 +83,11 @@ public class ArtistController {
                        }
                    }
                }
-               artistService.deleteById(id);
-               return ResponseEntity.noContent().build();
            }
-           else{
-               artistService.deleteById(id);
-               return ResponseEntity.noContent().build();
-           }
+            artistService.deleteById(id);
+            return ResponseEntity.noContent().header("404", "This song does not exist.").build();
         }
 
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.notFound().header("404", "There are no available songs.").build();
     }
 }
