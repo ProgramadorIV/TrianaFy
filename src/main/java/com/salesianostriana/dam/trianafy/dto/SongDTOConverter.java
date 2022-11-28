@@ -23,4 +23,18 @@ public class SongDTOConverter {
                 .artist(song.getArtist()!=null?song.getArtist().getName():null)
                 .build();
     }
+
+    public GetSongWithArtistDTO songToGetSongWithArtistDTO(Song song){
+        return  GetSongWithArtistDTO.builder()
+                .id(song.getId())
+                .title(song.getTitle())
+                .artist(GetArtistDTO.builder()
+                        .id(song.getArtist().getId())
+                        .artist(song.getArtist().getName())
+                        .build()
+                )
+                .album(song.getAlbum())
+                .year(song.getYear())
+                .build();
+    }
 }
