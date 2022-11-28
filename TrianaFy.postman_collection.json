@@ -1,0 +1,467 @@
+{
+	"info": {
+		"_postman_id": "18a4956a-7a87-43a0-9982-9790333c3e55",
+		"name": "TrianaFy",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "23783626"
+	},
+	"item": [
+		{
+			"name": "Artist",
+			"item": [
+				{
+					"name": "GetOne",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}{{ARTIST_URL}}/1",
+							"host": [
+								"{{BASE_URL}}{{ARTIST_URL}}"
+							],
+							"path": [
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetAll",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}{{ARTIST_URL}}/",
+							"host": [
+								"{{BASE_URL}}{{ARTIST_URL}}"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteOne",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}{{ARTIST_URL}}/1",
+							"host": [
+								"{{BASE_URL}}{{ARTIST_URL}}"
+							],
+							"path": [
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateOne",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"{{$randomFullName}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}{{ARTIST_URL}}/",
+							"host": [
+								"{{BASE_URL}}{{ARTIST_URL}}"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateOne",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"{{$randomFullName}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}{{ARTIST_URL}}/1",
+							"host": [
+								"{{BASE_URL}}{{ARTIST_URL}}"
+							],
+							"path": [
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Song",
+			"item": [
+				{
+					"name": "GetAll",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}{{SONG_URL}}/",
+							"host": [
+								"{{BASE_URL}}{{SONG_URL}}"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetOne",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}{{SONG_URL}}/10",
+							"host": [
+								"{{BASE_URL}}{{SONG_URL}}"
+							],
+							"path": [
+								"10"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateOne",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"{{$randomNoun}}\",\r\n    \"artistId\": 1,\r\n    \"album\": \"{{$randomNoun}}\",\r\n    \"year\": {{$randomInt}}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}{{SONG_URL}}/",
+							"host": [
+								"{{BASE_URL}}{{SONG_URL}}"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateOne",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"{{$randomNoun}}\",\r\n    \"artistId\": 2,\r\n    \"album\": \"{{$randomNoun}}\",\r\n    \"year\": {{$randomInt}}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}{{SONG_URL}}/11",
+							"host": [
+								"{{BASE_URL}}{{SONG_URL}}"
+							],
+							"path": [
+								"11"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteOne",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}{{SONG_URL}}/11",
+							"host": [
+								"{{BASE_URL}}{{SONG_URL}}"
+							],
+							"path": [
+								"11"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Playlist",
+			"item": [
+				{
+					"name": "GetAll",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}{{PLAYLIST_URL}}/",
+							"host": [
+								"{{BASE_URL}}{{PLAYLIST_URL}}"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetOne",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}{{PLAYLIST_URL}}/12",
+							"host": [
+								"{{BASE_URL}}{{PLAYLIST_URL}}"
+							],
+							"path": [
+								"12"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateOne",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"{{$randomNoun}}\",\r\n    \"description\": \"{{$randomLoremSentence}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}{{PLAYLIST_URL}}/",
+							"host": [
+								"{{BASE_URL}}{{PLAYLIST_URL}}"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateOne",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"{{$randomNoun}}\",\r\n    \"description\": \"{{$randomLoremSentence}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}{{PLAYLIST_URL}}/12",
+							"host": [
+								"{{BASE_URL}}{{PLAYLIST_URL}}"
+							],
+							"path": [
+								"12"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteOne",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}{{PLAYLIST_URL}}/12",
+							"host": [
+								"{{BASE_URL}}{{PLAYLIST_URL}}"
+							],
+							"path": [
+								"12"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PutSongInPlaylist",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}{{PLAYLIST_URL}}/list/12/song/4",
+							"host": [
+								"{{BASE_URL}}{{PLAYLIST_URL}}"
+							],
+							"path": [
+								"list",
+								"12",
+								"song",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetAllSongsFromPlaylist",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}{{PLAYLIST_URL}}/list/12/song",
+							"host": [
+								"{{BASE_URL}}{{PLAYLIST_URL}}"
+							],
+							"path": [
+								"list",
+								"12",
+								"song"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetSonfFromPlaylist",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}{{PLAYLIST_URL}}/list/12/song/9",
+							"host": [
+								"{{BASE_URL}}{{PLAYLIST_URL}}"
+							],
+							"path": [
+								"list",
+								"12",
+								"song",
+								"9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteSongFromPlayList",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}{{PLAYLIST_URL}}/list/12/song/9",
+							"host": [
+								"{{BASE_URL}}{{PLAYLIST_URL}}"
+							],
+							"path": [
+								"list",
+								"12",
+								"song",
+								"9"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "BASE_URL",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "ARTIST_URL",
+			"value": "/artist",
+			"type": "string"
+		},
+		{
+			"key": "SONG_URL",
+			"value": "/song",
+			"type": "string"
+		},
+		{
+			"key": "PLAYLIST_URL",
+			"value": "/playlist",
+			"type": "string"
+		}
+	]
+}
