@@ -1,10 +1,12 @@
 package com.salesianostriana.dam.trianafy.controllers;
 
+import com.salesianostriana.dam.trianafy.dto.CreatePlaylistDTO;
 import com.salesianostriana.dam.trianafy.model.Artist;
 import com.salesianostriana.dam.trianafy.model.Song;
 import com.salesianostriana.dam.trianafy.service.ArtistService;
 import com.salesianostriana.dam.trianafy.service.SongService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -32,6 +34,10 @@ public class ArtistController {
 
 
     @Operation(summary = "Crear un artista.")
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Nuevo artista", required = true,
+            content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = Artist.class))}
+    )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Se ha creado el artista.",
             content = {@Content(mediaType = "application/json",
@@ -74,7 +80,10 @@ public class ArtistController {
             @ApiResponse(responseCode = "404", description = "No hay artistas disponibles.", content = @Content)
 
     })
-    public ResponseEntity<Artist> getArtistById(@PathVariable Long id){
+    public ResponseEntity<Artist> getArtistById(
+            @Parameter(description = "ID del artista buscado.", required = true)
+            @PathVariable Long id
+    ){
         List<Artist> list = getAllArtist().getBody();
 
         if(list==null)
@@ -90,6 +99,10 @@ public class ArtistController {
 
     @PutMapping("/{id}")
     @Operation(summary = "Modificar un artista.")
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Nuevo artista", required = true,
+            content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = Artist.class))}
+    )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Artista modificado.",
                     content = {@Content(mediaType = "application/json",
@@ -97,7 +110,10 @@ public class ArtistController {
             @ApiResponse(responseCode = "404", description = "Artista no encontrado.",
                     content = @Content),
     })
-    public ResponseEntity<Artist> updateArtist(@PathVariable Long id, @RequestBody Artist artist){
+    public ResponseEntity<Artist> updateArtist(
+            @Parameter(description = "ID del artista a modificar.", required = true)
+            @PathVariable Long id, @RequestBody Artist artist
+    ){
         if(artistService.findById(id).isPresent())
             return ResponseEntity.of(
                     artistService.findById(id)
@@ -120,7 +136,10 @@ public class ArtistController {
                     content = @Content),
             @ApiResponse(responseCode = "404", description = "No hay artistas disponibles.", content = @Content)
     })
-    public ResponseEntity<?> deleteArtist(@PathVariable Long id){
+    public ResponseEntity<?> deleteArtist(
+            @Parameter(description = "ID del artista a eliminar.", required = true)
+            @PathVariable Long id
+    ){
 
         if(artistService.findById(id).isPresent()){
 

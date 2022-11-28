@@ -6,11 +6,14 @@ import com.salesianostriana.dam.trianafy.model.Song;
 import com.salesianostriana.dam.trianafy.service.PlaylistService;
 import com.salesianostriana.dam.trianafy.service.SongService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,11 +24,13 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController @RequiredArgsConstructor @RequestMapping("/playlist")
+@Tag(name = "Playlist", description = "Controlador de los endpoints de playlist.")
 public class PlayListController {
 
     private final PlaylistService playlistService;
     private final PlaylistDTOConverter playlistDTOConverter;
 
+    private final SongDTOConverter songDTOConverter;
     private final SongService songService;
 
     @GetMapping("/")
@@ -64,7 +69,10 @@ public class PlayListController {
                     content = @Content),
             @ApiResponse(responseCode = "404", description = "No hay playlists disponibles.", content = @Content)
     })
-    public ResponseEntity<GetPlaylistWithArtistDTO> getPlaylistById(@PathVariable Long id){
+    public ResponseEntity<GetPlaylistWithArtistDTO> getPlaylistById(
+            @Parameter(description = "ID de la playlist buscada", required = true)
+            @PathVariable Long id
+    ){
 
         List<Playlist> playlists = playlistService.findAll();
 
@@ -82,6 +90,10 @@ public class PlayListController {
 
     @PostMapping("/")
     @Operation(summary = "Crea una playlist.")
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Nueva playlist", required = true,
+            content = {@Content(mediaType = "application/json",
+            schema = @Schema(implementation = CreatePlaylistDTO.class))}
+    )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Playlist modificada.",
                     content = {@Content(mediaType = "application/json",
@@ -99,6 +111,10 @@ public class PlayListController {
 
     @PutMapping("/{id}")
     @Operation(summary = "Busca y modifica una canción por id.")
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Nueva playlist", required = true,
+            content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = CreatePlaylistDTO.class))}
+    )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Canción modificada.",
                     content = {@Content(mediaType = "application/json",
@@ -106,7 +122,9 @@ public class PlayListController {
             @ApiResponse(responseCode = "404", description = "Canción no encontrada.",
                     content = @Content)
     })
-    public ResponseEntity<NumberOfSongsDTO> updatePlaylist(@PathVariable Long id, @RequestBody CreatePlaylistDTO createPlaylistDTO){
+    public ResponseEntity<NumberOfSongsDTO> updatePlaylist(
+            @Parameter(description = "ID de la playlist a modificar.", required = true)
+            @PathVariable Long id, @RequestBody CreatePlaylistDTO createPlaylistDTO){
 
         Optional<Playlist> playlist = playlistService.findById(id);
 
@@ -135,7 +153,10 @@ public class PlayListController {
             @ApiResponse(responseCode = "404", description = "Canción no encontrada.",
                     content = @Content)
     })
-    public ResponseEntity<?> deletePlaylist(@PathVariable Long id){
+    public ResponseEntity<?> deletePlaylist(
+            @Parameter(description = "ID de la playlist a borrar.", required = true)
+            @PathVariable Long id
+    ){
 
         if(playlistService.findById(id).isPresent()){
             playlistService.deleteById(id);
@@ -143,7 +164,7 @@ public class PlayListController {
         }
         return ResponseEntity.notFound().header("404", "This playlist does not exist.").build();
     }
-
+/////////////////////////////////////////
     @PostMapping("/list/{id1}/song/{id2}")
     @Operation(summary = "Busca la canción y la playlist y mete la canción en la playlist.")
     @ApiResponses(value = {
@@ -153,7 +174,14 @@ public class PlayListController {
             @ApiResponse(responseCode = "404", description = "Alguno de los parametros especificados no se encuentran.",
                     content = @Content)
     })
-    public ResponseEntity<GetPlaylistWithArtistDTO> addSongToPlaylist(@PathVariable("id1") Long idList, @PathVariable("id2") Long idSong){
+    @Parameters( value = {
+            @Parameter(description = "ID de la playlist buscada", required = true),
+            @Parameter(description = "ID de la canción a añadir", required = true)
+        }
+    )
+    public ResponseEntity<GetPlaylistWithArtistDTO> addSongToPlaylist(
+            @PathVariable("id1") Long idList, @PathVariable("id2") Long idSong
+    ){
 
         Optional<Playlist> playlist = playlistService.findById(idList);
         Optional<Song> song = songService.findById(idSong);
@@ -177,7 +205,10 @@ public class PlayListController {
             @ApiResponse(responseCode = "404", description = "Playlist no encontrada.",
                     content = @Content)
     })
-    public ResponseEntity<GetPlaylistWithArtistDTO> getAllSongsFromPlaylist(@PathVariable Long id){
+    public ResponseEntity<GetPlaylistWithArtistDTO> getAllSongsFromPlaylist(
+            @Parameter(description = "ID de la playlist buscada.", required = true)
+            @PathVariable Long id
+    ){
 
         Optional<Playlist> playlist = playlistService.findById(id);
 
@@ -197,7 +228,12 @@ public class PlayListController {
             @ApiResponse(responseCode = "404", description = "Alguno de los parametros especificados no se encuentra.",
                     content = @Content)
     })
-    public ResponseEntity<Song> getSongFromPlaylist(@PathVariable("id1") Long listId, @PathVariable("id2") Long songId){
+    @Parameters( value = {
+            @Parameter(description = "ID de la playlist buscada", required = true),
+            @Parameter(description = "ID de la canción buscada", required = true)
+        }
+    )
+    public ResponseEntity<GetSongWithArtistDTO> getSongFromPlaylist(@PathVariable("id1") Long listId, @PathVariable("id2") Long songId){
 
         Optional<Playlist> playlist = playlistService.findById(listId);
         Optional<Song> song = songService.findById(songId);
@@ -205,7 +241,7 @@ public class PlayListController {
         if(playlist.isPresent() && song.isPresent()){
             for(Song s: playlist.get().getSongs()){
                 if(s.getId() == songId)
-                    return ResponseEntity.of(songService.findById(songId));
+                    return ResponseEntity.of(Optional.of(songDTOConverter.songToGetSongWithArtistDTO(songService.findById(songId).get())));
             }
         }
 
@@ -221,6 +257,11 @@ public class PlayListController {
            @ApiResponse(responseCode = "404", description = "Alguno de los parametros especificados no se encuentra.",
                    content = @Content)
    })
+   @Parameters( value = {
+           @Parameter(description = "ID de la playlist buscada", required = true),
+           @Parameter(description = "ID de la canción a eliminar", required = true)
+        }
+   )
     public ResponseEntity<?> deleteSongFromPlaylist(@PathVariable("id1") Long listId, @PathVariable("id2") Long songId){
         Optional<Playlist> playlist = playlistService.findById(listId);
         Optional<Song> song = songService.findById(songId);
