@@ -29,7 +29,7 @@ public class SongDTOConverter {
                 .id(song.getId())
                 .title(song.getTitle())
                 .artist(GetArtistDTO.builder()
-                        .id(song.getArtist().getId())
+                        .id(song.getArtist().getId()==null?null: song.getId())
                         .artist(song.getArtist().getName())
                         .build()
                 )
