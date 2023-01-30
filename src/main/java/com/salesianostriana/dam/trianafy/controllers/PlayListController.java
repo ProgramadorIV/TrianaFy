@@ -1,6 +1,9 @@
 package com.salesianostriana.dam.trianafy.controllers;
 
 import com.salesianostriana.dam.trianafy.dto.*;
+import com.salesianostriana.dam.trianafy.exception.playlist.NoPlaylistsException;
+import com.salesianostriana.dam.trianafy.exception.playlist.PlaylistNotFoundException;
+import com.salesianostriana.dam.trianafy.exception.song.SongNotFoundException;
 import com.salesianostriana.dam.trianafy.model.Playlist;
 import com.salesianostriana.dam.trianafy.model.Song;
 import com.salesianostriana.dam.trianafy.service.PlaylistService;
@@ -48,7 +51,7 @@ public class PlayListController {
         List<Playlist> playlists = playlistService.findAll();
 
         if(playlists.isEmpty())
-            return ResponseEntity.notFound().header("404", "There are no available playlists.").build();
+            throw new NoPlaylistsException();
         else{
             List<NumberOfSongsDTO> result = playlists.stream()
                     .map(playlistDTOConverter::playListToNumberOfSongsDTO)
@@ -83,9 +86,9 @@ public class PlayListController {
             }
         }
         else
-            return ResponseEntity.notFound().header("404","This playlist does not exist..").build();
+            throw new PlaylistNotFoundException(id);
 
-        return ResponseEntity.notFound().header("404", "There are no available playlists.").build();
+        throw new NoPlaylistsException();
     }
 
     @PostMapping("/")
@@ -141,7 +144,7 @@ public class PlayListController {
 
             return ResponseEntity.of(Optional.of(playlistDTOConverter.playListToNumberOfSongsDTO(playlist.get())));
         }
-        return ResponseEntity.notFound().header("404", "This playlist does not exist.").build();
+        throw new PlaylistNotFoundException(id);
 
     }
 
@@ -160,9 +163,9 @@ public class PlayListController {
 
         if(playlistService.findById(id).isPresent()){
             playlistService.deleteById(id);
-            return ResponseEntity.noContent().header("204", "The playlist has been removed successfully.").build();
+            return ResponseEntity.noContent().build();
         }
-        return ResponseEntity.notFound().header("404", "This playlist does not exist.").build();
+        throw new PlaylistNotFoundException(id);
     }
 /////////////////////////////////////////
     @PostMapping("/list/{id1}/song/{id2}")
@@ -192,8 +195,10 @@ public class PlayListController {
             playlistService.add(playlist.get());
             GetPlaylistWithArtistDTO result = playlistDTOConverter.playlistToGetPlaylistWithArtistDTO(playlist.get());
             return ResponseEntity.status(HttpStatus.CREATED).body(result);
+        } else if (playlist.isEmpty()) {
+            throw new PlaylistNotFoundException(idList);
         }
-        return ResponseEntity.notFound().header("404", "Some of the specified parameters do/es not exist.").build();
+        throw new SongNotFoundException(idSong);
     }
 
     @GetMapping("/list/{id}/song")
@@ -216,7 +221,7 @@ public class PlayListController {
 
             return ResponseEntity.of(Optional.of(playlistDTOConverter.playlistToGetPlaylistWithArtistDTO(playlist.get())));
         }
-        return ResponseEntity.notFound().header("404", "This playlist does not exist.").build();
+        throw new PlaylistNotFoundException(id);
     }
 
     @GetMapping("/list/{id1}/song/{id2}")
@@ -243,8 +248,12 @@ public class PlayListController {
                 if(s.getId() == songId)
                     return ResponseEntity.of(Optional.of(songDTOConverter.songToGetSongWithArtistDTO(songService.findById(songId).get())));
             }
+        } else if (playlist.isEmpty()) {
+            throw new PlaylistNotFoundException(listId);
+        } else if (song.isEmpty()) {
+            throw new SongNotFoundException(songId);
         }
-
+        //Song not present in the playlist.
         return ResponseEntity.notFound().header("404", "Some of the specified parameters do/es not exist.").build();
     }
 
@@ -279,8 +288,12 @@ public class PlayListController {
                     return ResponseEntity.noContent().header("204", "The song/s has/have been removed successfully from the playlist.").build();
                 }
             }
+        } else if (playlist.isEmpty()) {
+            throw new PlaylistNotFoundException(listId);
+        } else if (song.isEmpty()) {
+            throw new SongNotFoundException(songId);
         }
-
-        return ResponseEntity.notFound().header("404", "Some of the specified parameters do/es not exist.").build();
+        //Song not in the list exception
+       return ResponseEntity.notFound().header("404", "Some of the specified parameters do/es not exist.").build();
     }
 }

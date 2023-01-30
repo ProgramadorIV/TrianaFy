@@ -26,7 +26,7 @@ public class ApiErrorImpl implements ApiError {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
     @Builder.Default
-    private LocalDateTime dateTime = LocalDateTime.now();
+    private LocalDateTime date = LocalDateTime.now();
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<ApiSubError> subErrors;

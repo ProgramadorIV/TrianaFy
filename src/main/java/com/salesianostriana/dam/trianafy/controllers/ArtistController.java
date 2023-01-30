@@ -1,6 +1,7 @@
 package com.salesianostriana.dam.trianafy.controllers;
 
-import com.salesianostriana.dam.trianafy.dto.CreatePlaylistDTO;
+import com.salesianostriana.dam.trianafy.exception.artist.ArtistNotFoundException;
+import com.salesianostriana.dam.trianafy.exception.artist.NoArtistsException;
 import com.salesianostriana.dam.trianafy.model.Artist;
 import com.salesianostriana.dam.trianafy.model.Song;
 import com.salesianostriana.dam.trianafy.service.ArtistService;
@@ -63,7 +64,7 @@ public class ArtistController {
     })
     public ResponseEntity<List<Artist>> getAllArtist(){
         if(artistService.findAll().isEmpty())
-            return ResponseEntity.notFound().header("404", "There are no available artists.").build();
+            throw new NoArtistsException();
         else{
             return ResponseEntity.ok().body(artistService.findAll());
         }
@@ -87,14 +88,14 @@ public class ArtistController {
         List<Artist> list = getAllArtist().getBody();
 
         if(list==null)
-            return ResponseEntity.notFound().header("404", "There are no available artist.").build();
+            throw new NoArtistsException();
 
         for (Artist artist: list) {
             if(artist.getId() == id)
                 return ResponseEntity.of(artistService.findById(id));
         }
 
-        return ResponseEntity.notFound().header("404", "This song does not exist.").build();
+        throw new ArtistNotFoundException(id);
     }
 
     @PutMapping("/{id}")
@@ -123,7 +124,7 @@ public class ArtistController {
                             }).orElse(Optional.empty())
             );
 
-        return ResponseEntity.notFound().header("404", "This song does not exist.").build();
+        throw new ArtistNotFoundException(id);
 
     }
 
@@ -155,10 +156,10 @@ public class ArtistController {
                    }
                }
            }
-            artistService.deleteById(id);
-            return ResponseEntity.noContent().header("404", "This song does not exist.").build();
+           artistService.deleteById(id);
+            return ResponseEntity.noContent().build();
         }
 
-        return ResponseEntity.notFound().header("404", "There are no available songs.").build();
+        throw new ArtistNotFoundException(id);
     }
 }
