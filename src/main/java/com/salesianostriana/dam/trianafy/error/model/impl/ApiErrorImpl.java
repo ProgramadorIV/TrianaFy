@@ -34,8 +34,4 @@ public class ApiErrorImpl implements ApiError {
 
     public int getStatusCode(){ return status!=null ? status.value() : 0; }
 
-    @Override
-    public LocalDateTime getDate() {
-        return null;
-    }
 }

@@ -31,10 +31,14 @@ public class ApiValidationSubError extends ApiSubError {
 
             return ApiValidationSubError.builder()
                     .object(fieldError.getObjectName())
+                    .field(fieldError.getField())
+                    .rejectedValue(fieldError.getRejectedValue())
+                    .message(fieldError.getDefaultMessage())
                     .build();
         }
-        else
-            return ApiValidationSubError.builder()
+        return ApiValidationSubError.builder()
+                    .object(objectError.getObjectName())
+                    .message(objectError.getDefaultMessage())
                     .build();
     }
 }

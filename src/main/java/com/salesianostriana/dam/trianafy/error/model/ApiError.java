@@ -1,12 +1,14 @@
 package com.salesianostriana.dam.trianafy.error.model;
 
 import com.salesianostriana.dam.trianafy.error.model.impl.ApiErrorImpl;
+import com.salesianostriana.dam.trianafy.error.model.impl.ApiValidationSubError;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.ObjectError;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public interface ApiError {
 
@@ -51,7 +53,7 @@ public interface ApiError {
 
             List<ApiSubError> subErrors = errors.stream()
                     .map(ApiValidationSubError::fromObjectError)
-                    .toList();
+                    .collect(Collectors.toList());
 
             result.setSubErrors(subErrors);
         }
