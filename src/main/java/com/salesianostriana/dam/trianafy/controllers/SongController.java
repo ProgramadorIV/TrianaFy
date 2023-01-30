@@ -1,6 +1,11 @@
 package com.salesianostriana.dam.trianafy.controllers;
 
-import com.salesianostriana.dam.trianafy.dto.*;
+import com.salesianostriana.dam.trianafy.dto.CreateSongDTO;
+import com.salesianostriana.dam.trianafy.dto.GetSongDTO;
+import com.salesianostriana.dam.trianafy.dto.GetSongWithArtistDTO;
+import com.salesianostriana.dam.trianafy.dto.SongDTOConverter;
+import com.salesianostriana.dam.trianafy.exception.song.NoSongsException;
+import com.salesianostriana.dam.trianafy.exception.song.SongNotFoundException;
 import com.salesianostriana.dam.trianafy.model.Artist;
 import com.salesianostriana.dam.trianafy.model.Playlist;
 import com.salesianostriana.dam.trianafy.model.Song;
@@ -48,7 +53,7 @@ public class SongController {
         List<Song> songList = songService.findAll();
 
         if(songList.isEmpty())
-            return ResponseEntity.notFound().header("404","There are no available songs.").build();
+            throw new NoSongsException();
         else{
             return ResponseEntity.ok().body(songList
                     .stream()
@@ -75,13 +80,13 @@ public class SongController {
         List<Song> songList = songService.findAll();
 
         if(songList.isEmpty()){
-            return ResponseEntity.notFound().header("404", "There are no available songs.").build();
+            throw new NoSongsException();
         }
         for(Song song: songList){
             if(song.getId() == id)
                 return ResponseEntity.of(Optional.of(songDTOConverter.songToGetSongWithArtistDTO(songService.findById(id).get())));
         }
-        return ResponseEntity.notFound().header("404", "This song does not exist.").build();
+        throw new SongNotFoundException(id);
     }
 
     @PostMapping("/")
@@ -151,7 +156,7 @@ public class SongController {
 
             return ResponseEntity.of(Optional.of(songDTOConverter.SongToGetSongDTO(song.get())));
         }
-        return ResponseEntity.notFound().header("404", "This song does not exist.").build();
+        throw new SongNotFoundException(id);
     }
 
 
@@ -188,7 +193,7 @@ public class SongController {
             }
 
         }
-        return ResponseEntity.notFound().header("404", "This song does not exist.").build();
+        throw new SongNotFoundException(id);
     }
 
 

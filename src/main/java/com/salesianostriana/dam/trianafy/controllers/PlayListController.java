@@ -4,6 +4,7 @@ import com.salesianostriana.dam.trianafy.dto.*;
 import com.salesianostriana.dam.trianafy.exception.playlist.NoPlaylistsException;
 import com.salesianostriana.dam.trianafy.exception.playlist.PlaylistNotFoundException;
 import com.salesianostriana.dam.trianafy.exception.song.SongNotFoundException;
+import com.salesianostriana.dam.trianafy.exception.song.SongNotInPlaylistException;
 import com.salesianostriana.dam.trianafy.model.Playlist;
 import com.salesianostriana.dam.trianafy.model.Song;
 import com.salesianostriana.dam.trianafy.service.PlaylistService;
@@ -250,11 +251,10 @@ public class PlayListController {
             }
         } else if (playlist.isEmpty()) {
             throw new PlaylistNotFoundException(listId);
-        } else if (song.isEmpty()) {
+        } else
             throw new SongNotFoundException(songId);
-        }
-        //Song not present in the playlist.
-        return ResponseEntity.notFound().header("404", "Some of the specified parameters do/es not exist.").build();
+
+        throw new SongNotInPlaylistException(songId);//Song not present in the playlist.
     }
 
    @DeleteMapping("/list/{id1}/song/{id2}")
@@ -290,10 +290,9 @@ public class PlayListController {
             }
         } else if (playlist.isEmpty()) {
             throw new PlaylistNotFoundException(listId);
-        } else if (song.isEmpty()) {
+        } else
             throw new SongNotFoundException(songId);
-        }
         //Song not in the list exception
-       return ResponseEntity.notFound().header("404", "Some of the specified parameters do/es not exist.").build();
+       throw new SongNotInPlaylistException(songId);
     }
 }
