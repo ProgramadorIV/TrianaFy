@@ -28,10 +28,13 @@ public class SongDTOConverter {
         return  GetSongWithArtistDTO.builder()
                 .id(song.getId())
                 .title(song.getTitle())
-                .artist(GetArtistDTO.builder()
+                .artist(song.getArtist()!= null ?
+                        GetArtistDTO.builder()
                         .id(song.getArtist().getId())
                         .artist(song.getArtist().getName())
                         .build()
+                        :
+                        null
                 )
                 .album(song.getAlbum())
                 .year(song.getYear())

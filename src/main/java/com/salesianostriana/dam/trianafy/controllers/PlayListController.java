@@ -249,12 +249,11 @@ public class PlayListController {
                 if(s.getId() == songId)
                     return ResponseEntity.of(Optional.of(songDTOConverter.songToGetSongWithArtistDTO(songService.findById(songId).get())));
             }
+            throw new SongNotInPlaylistException(songId);//Song not present in the playlist.
         } else if (playlist.isEmpty()) {
             throw new PlaylistNotFoundException(listId);
         } else
             throw new SongNotFoundException(songId);
-
-        throw new SongNotInPlaylistException(songId);//Song not present in the playlist.
     }
 
    @DeleteMapping("/list/{id1}/song/{id2}")
@@ -285,14 +284,13 @@ public class PlayListController {
                                     .collect(Collectors.toList())
                     );
                     playlistService.add(playlist.get());
-                    return ResponseEntity.noContent().header("204", "The song/s has/have been removed successfully from the playlist.").build();
+                    return ResponseEntity.noContent().build();
                 }
             }
+            throw new SongNotInPlaylistException(songId);
         } else if (playlist.isEmpty()) {
             throw new PlaylistNotFoundException(listId);
         } else
             throw new SongNotFoundException(songId);
-        //Song not in the list exception
-       throw new SongNotInPlaylistException(songId);
     }
 }
