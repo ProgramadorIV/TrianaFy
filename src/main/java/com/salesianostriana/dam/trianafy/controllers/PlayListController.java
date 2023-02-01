@@ -25,6 +25,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -78,7 +79,7 @@ public class PlayListController {
     })
     public ResponseEntity<GetPlaylistWithArtistDTO> getPlaylistById(
             @Parameter(description = "ID de la playlist buscada", required = true)
-            @PathVariable Long id
+            @Min(value = 1, message = "{playlist.id.min}") @PathVariable Long id
     ){
 
         List<Playlist> playlists = playlistService.findAll();
@@ -117,7 +118,7 @@ public class PlayListController {
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Busca y modifica una canción por id.")
+    @Operation(summary = "Busca y modifica una playlist por id.")
     @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Nueva playlist", required = true,
             content = {@Content(mediaType = "application/json",
                     schema = @Schema(implementation = CreatePlaylistDTO.class))}
@@ -130,7 +131,7 @@ public class PlayListController {
                     content = @Content)
     })
     public ResponseEntity<NumberOfSongsDTO> updatePlaylist(
-            @Parameter(description = "ID de la playlist a modificar.", required = true)
+            @Min(value = 1, message = "{playlist.id.min}") @Parameter(description = "ID de la playlist a modificar.", required = true)
             @PathVariable Long id, @Valid @RequestBody CreatePlaylistDTO createPlaylistDTO){
 
         Optional<Playlist> playlist = playlistService.findById(id);
@@ -153,7 +154,7 @@ public class PlayListController {
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Busca y elimina una canción por id.")
+    @Operation(summary = "Busca y elimina una playlist por id.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Canción eliminada.",
                     content = {@Content(mediaType = "application/json")}),
@@ -162,7 +163,7 @@ public class PlayListController {
     })
     public ResponseEntity<?> deletePlaylist(
             @Parameter(description = "ID de la playlist a borrar.", required = true)
-            @PathVariable Long id
+            @Min(value = 1, message = "{song.id.min}") @PathVariable Long id
     ){
 
         if(playlistService.findById(id).isPresent()){
@@ -187,7 +188,8 @@ public class PlayListController {
         }
     )
     public ResponseEntity<GetPlaylistWithArtistDTO> addSongToPlaylist(
-            @PathVariable("id1") Long idList, @PathVariable("id2") Long idSong
+            @Min(value = 1, message = "{playlist.id.min}") @PathVariable("id1") Long idList,
+            @Min(value = 1, message = "{song.id.min}") @PathVariable("id2") Long idSong
     ){
 
         Optional<Playlist> playlist = playlistService.findById(idList);
@@ -206,7 +208,7 @@ public class PlayListController {
     }
 
     @GetMapping("/list/{id}/song")
-    @Operation(summary = "Busca y devuelve una canción por id.")
+    @Operation(summary = "Muestra la playlist con todas sus canciones.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Playlist encontrada.",
                     content = {@Content(mediaType = "application/json",
@@ -216,7 +218,7 @@ public class PlayListController {
     })
     public ResponseEntity<GetPlaylistWithArtistDTO> getAllSongsFromPlaylist(
             @Parameter(description = "ID de la playlist buscada.", required = true)
-            @PathVariable Long id
+            @Min(value = 1, message = "{playlist.id.min}") @PathVariable Long id
     ){
 
         Optional<Playlist> playlist = playlistService.findById(id);
@@ -242,7 +244,9 @@ public class PlayListController {
             @Parameter(description = "ID de la canción buscada", required = true)
         }
     )
-    public ResponseEntity<GetSongWithArtistDTO> getSongFromPlaylist(@PathVariable("id1") Long listId, @PathVariable("id2") Long songId){
+    public ResponseEntity<GetSongWithArtistDTO> getSongFromPlaylist(
+            @Min(value = 1, message = "{playlist.id.min}") @PathVariable("id1") Long listId,
+            @Min(value = 1, message = "{song.id.min}") @PathVariable("id2") Long songId){
 
         Optional<Playlist> playlist = playlistService.findById(listId);
         Optional<Song> song = songService.findById(songId);
@@ -273,7 +277,10 @@ public class PlayListController {
            @Parameter(description = "ID de la canción a eliminar", required = true)
         }
    )
-    public ResponseEntity<?> deleteSongFromPlaylist(@PathVariable("id1") Long listId, @PathVariable("id2") Long songId){
+    public ResponseEntity<?> deleteSongFromPlaylist(
+           @Min(value = 1, message = "{playlist.id.min}") @PathVariable("id1") Long listId,
+           @Min(value = 1, message = "{song.id.min}") @PathVariable("id2") Long songId) {
+
         Optional<Playlist> playlist = playlistService.findById(listId);
         Optional<Song> song = songService.findById(songId);
 

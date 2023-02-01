@@ -17,8 +17,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.Min;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,6 +29,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @RequestMapping("/artist")
 @Tag(name = "Artist", description = "Controlador de los endpoints de artista.")
+@Validated
 public class ArtistController {
 
     private final ArtistService artistService;
@@ -83,6 +86,7 @@ public class ArtistController {
     })
     public ResponseEntity<Artist> getArtistById(
             @Parameter(description = "ID del artista buscado.", required = true)
+            @Min(value = 1, message = "{artist.id.min}")
             @PathVariable Long id
     ){
         List<Artist> list = getAllArtist().getBody();
@@ -113,6 +117,7 @@ public class ArtistController {
     })
     public ResponseEntity<Artist> updateArtist(
             @Parameter(description = "ID del artista a modificar.", required = true)
+            @Min(value = 1, message = "{artist.id.min}")
             @PathVariable Long id, @RequestBody Artist artist
     ){
         if(artistService.findById(id).isPresent())
@@ -139,6 +144,7 @@ public class ArtistController {
     })
     public ResponseEntity<?> deleteArtist(
             @Parameter(description = "ID del artista a eliminar.", required = true)
+            @Min(value = 1, message = "{artist.id.min}")
             @PathVariable Long id
     ){
 

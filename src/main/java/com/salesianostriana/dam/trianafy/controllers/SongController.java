@@ -27,6 +27,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -78,6 +79,7 @@ public class SongController {
     })
     public ResponseEntity<GetSongWithArtistDTO> getSongById(
             @Parameter(description = "ID de la canción buscada.", required = true)
+            @Min(value = 1, message = "{song.id.min}")
             @PathVariable Long id
     ){
         List<Song> songList = songService.findAll();
@@ -133,7 +135,8 @@ public class SongController {
     })
     public ResponseEntity<GetSongDTO> updateSong(
             @Parameter(description = "ID de la canción a modificar.", required = true)
-            @PathVariable Long id, @Valid @RequestBody CreateSongDTO createSongDTO
+            @Min(value = 1, message = "{song.id.min}") @PathVariable Long id,
+            @Valid @RequestBody CreateSongDTO createSongDTO
     ){
 
         Optional<Song> song = songService.findById(id);
@@ -173,6 +176,7 @@ public class SongController {
     })
     public ResponseEntity<?> deleteSong(
             @Parameter(description = "ID de la canción a eliminar.", required = true)
+            @Min(value = 1, message = "{song.id.min}")
             @PathVariable Long id
     ){
 
