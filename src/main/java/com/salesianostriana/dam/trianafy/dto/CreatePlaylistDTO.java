@@ -14,6 +14,6 @@ public class CreatePlaylistDTO {
     @NotEmpty(message = "{createPlaylistDTO.name.notempty}")
     private String name;
 
-    @Size(max = 100, message = "createPlaylistDTO.description.size")
+    @Size(max = 100, message = "{createPlaylistDTO.description.size}")
     private String description;
 }

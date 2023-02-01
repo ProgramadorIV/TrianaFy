@@ -21,14 +21,17 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController @RequiredArgsConstructor @RequestMapping("/playlist")
 @Tag(name = "Playlist", description = "Controlador de los endpoints de playlist.")
+@Validated
 public class PlayListController {
 
     private final PlaylistService playlistService;
@@ -105,7 +108,7 @@ public class PlayListController {
             @ApiResponse(responseCode = "404", description = "Playlist no encontrada.",
                     content = @Content)
     })
-    public ResponseEntity<GetPlaylistDTO> createPlaylist(@RequestBody CreatePlaylistDTO createPlaylistDTO){
+    public ResponseEntity<GetPlaylistDTO> createPlaylist(@Valid @RequestBody CreatePlaylistDTO createPlaylistDTO){
 
         Playlist playlist = playlistDTOConverter.createPlaylistDTOToPlaylist(createPlaylistDTO);
         playlistService.add(playlist);
@@ -128,7 +131,7 @@ public class PlayListController {
     })
     public ResponseEntity<NumberOfSongsDTO> updatePlaylist(
             @Parameter(description = "ID de la playlist a modificar.", required = true)
-            @PathVariable Long id, @RequestBody CreatePlaylistDTO createPlaylistDTO){
+            @PathVariable Long id, @Valid @RequestBody CreatePlaylistDTO createPlaylistDTO){
 
         Optional<Playlist> playlist = playlistService.findById(id);
 

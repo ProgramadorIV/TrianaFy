@@ -23,8 +23,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -33,6 +35,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @RequestMapping("/song")
 @Tag(name = "Song", description = "Controlador de los endpoints de canciones.")
+@Validated
 public class SongController {
 
     private final SongService songService;
@@ -102,11 +105,11 @@ public class SongController {
             @ApiResponse(responseCode = "400", description = "El formato de la canción no es correcto.",
                     content = @Content)
     })
-    public ResponseEntity<GetSongDTO> createSong(@RequestBody CreateSongDTO createSongDTO){
+    public ResponseEntity<GetSongDTO> createSong(@Valid @RequestBody CreateSongDTO createSongDTO){
 
         Song newSong = songDTOConverter.createSongDTOToSong(createSongDTO);
         Artist artist = artistService
-                .findById(createSongDTO.getArtistId())
+                .findById(createSongDTO.getArtistId()) //el id de artista del createSongDTO puede ser nulo
                 .isPresent()?
                 artistService.findById(createSongDTO.getArtistId()).get() : null;
 
@@ -130,7 +133,7 @@ public class SongController {
     })
     public ResponseEntity<GetSongDTO> updateSong(
             @Parameter(description = "ID de la canción a modificar.", required = true)
-            @PathVariable Long id, @RequestBody CreateSongDTO createSongDTO
+            @PathVariable Long id, @Valid @RequestBody CreateSongDTO createSongDTO
     ){
 
         Optional<Song> song = songService.findById(id);
