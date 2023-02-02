@@ -24,6 +24,10 @@ public class ArtistService {
         return repository.findById(id);
     }
 
+    public boolean existByName(String name){
+        return repository.existsByName(name);
+    }
+
     public List<Artist> findAll() {
         return repository.findAll();
     }

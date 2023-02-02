@@ -1,5 +1,6 @@
 package com.salesianostriana.dam.trianafy.controllers;
 
+import com.salesianostriana.dam.trianafy.dto.CreateArtistDTO;
 import com.salesianostriana.dam.trianafy.exception.artist.ArtistNotFoundException;
 import com.salesianostriana.dam.trianafy.exception.artist.NoArtistsException;
 import com.salesianostriana.dam.trianafy.model.Artist;
@@ -20,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import java.util.List;
 import java.util.Optional;
@@ -50,10 +52,10 @@ public class ArtistController {
             content = @Content)
     })
     @PostMapping("/")
-    public ResponseEntity<Artist> createArtist(@RequestBody Artist artist){
+    public ResponseEntity<Artist> createArtist(@Valid @RequestBody CreateArtistDTO artist){
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(artistService.add(artist));
+                .body(artistService.add(new Artist(artist.getName())));
     }
 
     @GetMapping("/")
@@ -118,7 +120,8 @@ public class ArtistController {
     public ResponseEntity<Artist> updateArtist(
             @Parameter(description = "ID del artista a modificar.", required = true)
             @Min(value = 1, message = "{artist.id.min}")
-            @PathVariable Long id, @RequestBody Artist artist
+            @PathVariable Long id,
+            @Valid @RequestBody CreateArtistDTO artist
     ){
         if(artistService.findById(id).isPresent())
             return ResponseEntity.of(

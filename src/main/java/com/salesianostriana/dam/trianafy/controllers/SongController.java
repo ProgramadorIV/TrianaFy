@@ -111,7 +111,7 @@ public class SongController {
 
         Song newSong = songDTOConverter.createSongDTOToSong(createSongDTO);
         Artist artist = artistService
-                .findById(createSongDTO.getArtistId()) //el id de artista del createSongDTO puede ser nulo
+                .findById(createSongDTO.getArtistId()==null? -1 : createSongDTO.getArtistId()) //el id de artista del createSongDTO puede ser nulo
                 .isPresent()?
                 artistService.findById(createSongDTO.getArtistId()).get() : null;
 
